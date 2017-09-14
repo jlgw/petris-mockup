@@ -1,2 +1,2 @@
 # petris-mockup
-Tkinter mockup of puzzle game
+Tkinter mockup of puzzle game.

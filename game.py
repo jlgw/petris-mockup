@@ -1,4 +1,5 @@
 import numpy as np
+from fractions import gcd
 import random
 import time
 import Tkinter
@@ -15,12 +16,8 @@ hardness   = 0.5 #lower is harder
 
 
 
-def euclid(a,b):
-    if b==0:
-        return a
-    else:
-        return euclid(max(a,b)-min((a,b)),min(a,b))
-
+def lcm(a,b):
+    return (a*b)/(gcd(a,b))
 
 def isprime(p):
     if p==1:
@@ -165,7 +162,6 @@ def merge(inp, out=None):
 def mergemat(inpmat):
     height, width= inpmat.shape
     outmat = np.copy(inpmat)
-    #print width, height
     for j in range(height):
         for i in range(width):
             if isprime(inpmat[j,i]):
@@ -181,55 +177,33 @@ def mergemat(inpmat):
                             outmat[j,i]   = 1
                             outmat[j-1,i] = 1
                             outmat[j+1,i] = 1
+            div = 1
             if i<width-1:
-                out = outmat[j,i]
-                #if 1:
                 if (inpmat[j,i]%inpmat[j,i+1])==0:
-                    #try this for now
-                    out = inpmat[j,i]/inpmat[j,i+1]
-                    #if inpmat[j,i+1]!=1:
-                        #out = 1
-                    #out = inpmat[j,i]/euclid(inpmat[j,i],inpmat[j,i+1])
-                    if out < outmat[j,i]:
-                        outmat[j,i] = out
-                    
+                    #out = inpmat[j,i]/inpmat[j,i+1]
+                    div = inpmat[j,i+1]
                 if (inpmat[j,i+1]%inpmat[j,i])==0:
                     outmat[j,i] = 1
             if i>0:
-                #if 1:
                 if (inpmat[j,i]%inpmat[j,i-1])==0:
-                    out = inpmat[j,i]/inpmat[j,i-1]
-                    #if inpmat[j,i-1]!=1:
-                        #out = 1
-                    #out = inpmat[j,i]/euclid(inpmat[j,i],inpmat[j,i-1])
-                    if out < outmat[j,i]:
-                        outmat[j,i] = out
+                    #out = inpmat[j,i]/inpmat[j,i-1]
+                    div = lcm(div, inpmat[j,i-1])
                 if (inpmat[j,i-1]%inpmat[j,i])==0:
                     outmat[j,i] = 1
             
             if j<height-1:
-                #if 1:
                 if (inpmat[j,i]%inpmat[j+1,i])==0:
-                    out = inpmat[j,i]/inpmat[j+1,i]
-                    #if inpmat[j+1,i]!=1:
-                        #out = 1
-                    #out = inpmat[j,i]/euclid(inpmat[j,i],inpmat[j+1,i])
-                    if out < outmat[j,i]:
-                        outmat[j,i] = out
-                if (inpmat[j+1,i]%inpmat[j,i])==0:
-                    outmat[j,i] = 1
+                    div = lcm(div, inpmat[j+1,i])
+                    #out = inpmat[j,i]/inpmat[j+1,i]
             if j>0:
-                #if 1:
                 if (inpmat[j,i]%inpmat[j-1,i])==0:
-                    out = inpmat[j,i]/inpmat[j-1,i]
-                    #out = inpmat[j,i]/euclid(inpmat[j,i],inpmat[j-1,i])
-                    #if inpmat[j-1,i]!=1:
-                        #out = 1
-                    if out < outmat[j,i]:
-                        outmat[j,i] = out
+                    div = lcm(div, inpmat[j-1,i])
+                    #out = inpmat[j,i]/inpmat[j-1,i]
                 if (inpmat[j-1,i]%inpmat[j,i])==0:
                     outmat[j,i] = 1
-
+            
+            if inpmat[j,i]/div < outmat[j,i]:
+                outmat[j,i] = inpmat[j,i]/div
     return outmat
            
 def complete_merge(mat, wait=False):
